@@ -13,6 +13,7 @@ from .templates import (
     XMLFeedSpider,
     CSVFeedSpider,
     SiteToMarkdownSpider,
+    GoogleMapsSpider,
 )
 from scrapling.engines.toolbelt.custom import Response
 
@@ -33,4 +34,5 @@ __all__ = [
     "XMLFeedSpider",
     "CSVFeedSpider",
     "SiteToMarkdownSpider",
+    "GoogleMapsSpider",
 ]

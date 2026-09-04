@@ -21,7 +21,8 @@ nav = [
         {Parsing = [
             {"Querying elements" = "parsing/selection.md"},
             {"Main classes" = "parsing/main_classes.md"},
-            {"Adaptive scraping" = "parsing/adaptive.md"}
+            {"Adaptive scraping" = "parsing/adaptive.md"},
+            {"Helpers" = "parsing/helpers.md"}
         ]},
         {Fetching = [
             {"Fetchers basics" = "fetching/choosing.md"},

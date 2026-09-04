@@ -1,0 +1,1 @@
+"""API routers — split from a single 681-line file into focused modules."""

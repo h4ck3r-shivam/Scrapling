@@ -1,0 +1,38 @@
+[project]
+name = "scrapling-control-center"
+version = "0.1.0"
+description = "Scrapling Control Center API (monorepo webapp)"
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = [
+    "fastapi>=0.141.1",
+    "uvicorn[standard]>=0.52.4",
+    "pydantic>=2.13.4",
+    "pydantic-settings>=2.15.0",
+    "aiosqlite>=0.22.1",
+    "argon2-cffi>=25.1.0",
+    "PyJWT>=2.13.0",
+    "cryptography>=50.0.0",
+    "email-validator>=2.3.0",
+    "python-multipart>=0.0.32",
+    "websockets>=17.0.1",
+    "python-dotenv>=1.2.3",
+    "sse-starlette>=3.4.8",
+    "anyio>=4.14.2",
+    # scrapling core + fetchers (playwright/patchright/curl_cffi via parent)
+    "scrapling[fetchers] @ file://../",
+]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.uv.sources]
+scrapling = { path = "..", editable = true }
+
+[tool.uv.workspace]
+members = []
+
+# For `uv sync --all-extras` compatibility if extras are later added
+[project.optional-dependencies]
+dev = ["pytest>=9.1.1", "pytest-asyncio>=1.4.0", "httpx>=0.28.1"]

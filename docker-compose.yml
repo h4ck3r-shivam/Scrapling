@@ -1,0 +1,85 @@
+# Scrapling Control Center – Coolify Service (Docker Compose)
+# Coolify: Project → Environment → + Add Resource → Docker Compose (Empty) → paste this file
+# FQDN: https://scrapling.yourdomain.com – set in Coolify Service UI (Traefik routes to api:8000)
+# No `networks:` needed – Coolify creates shared network automatically (see PLAN.md §4)
+<<<<<<< Updated upstream
+=======
+# No `ports:` / `env_file:` – Coolify Service injects env vars via the UI and routes
+# FQDN → Traefik → api:8000. Never publish host ports for this service.
+# For the optional Cloudflare Tunnel sidecar, use the docker-compose.tunnel.yml overlay.
+>>>>>>> Stashed changes
+# Persistent volume scc-data keeps app.db, exports/, crawls/, .jwt_secret, .secret_key across redeploys
+
+services:
+  api:
+    build:
+      context: .
+      dockerfile: webapp/Dockerfile.api
+<<<<<<< Updated upstream
+    # For Coolify Service, set FQDN per service in UI; Traefik will route to api:8000
+    # If using Cloudflare Tunnel instead of Coolify FQDN, run cloudflared sidecar below
+    ports:
+      - "8000:8000"
+    env_file:
+      - .env
+=======
+    # For Coolify Service, set FQDN per service in UI; Traefik will route to api:8000.
+    # Env vars are injected by Coolify (Environment Variables panel), not via env_file.
+>>>>>>> Stashed changes
+    environment:
+      - SCC_CORS_ORIGINS=${SCC_CORS_ORIGINS:-https://scrapling.yourdomain.com}
+      - SCC_ADMIN_PASSWORD=${SCC_ADMIN_PASSWORD}
+      - SCC_SECRET_KEY=${SCC_SECRET_KEY:-}
+<<<<<<< Updated upstream
+      # Optional: if using tunnel, set CLOUDFLARE_TUNNEL_TOKEN in Coolify env
+      - CLOUDFLARE_TUNNEL_TOKEN=${CLOUDFLARE_TUNNEL_TOKEN:-}
+    volumes:
+      - scc-data:/app/webapp/data
+=======
+    volumes:
+      - scc-data:/app/webapp/data
+    expose:
+      - 8000
+>>>>>>> Stashed changes
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/api/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+<<<<<<< Updated upstream
+      start_period: 10s
+    restart: unless-stopped
+    expose:
+      - 8000
+
+  # Optional Cloudflare Tunnel sidecar – enable if you prefer tunnel over Coolify FQDN
+  # On VM: cloudflared tunnel create scrapling && cloudflared tunnel route dns scrapling scrapling.yourdomain.com
+  # Ingress: scrapling.yourdomain.com -> http://api:8000
+  # To enable in Coolify, uncomment this service and set CLOUDFLARE_TUNNEL_TOKEN in env
+  cloudflared:
+    image: cloudflare/cloudflared:latest
+    command: tunnel --no-autoupdate run --token ${CLOUDFLARE_TUNNEL_TOKEN}
+    depends_on:
+      api:
+        condition: service_healthy
+    restart: unless-stopped
+    # Only start when token is set – use Coolify to toggle or `docker compose --profile tunnel up`
+    profiles: ["tunnel"]
+=======
+      start_period: 60s
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          cpus: '2.0'
+          memory: 3G
+    logging:
+      driver: json-file
+      options:
+        max-size: 10m
+        max-file: "3"
+>>>>>>> Stashed changes
+
+volumes:
+  scc-data:
+    driver: local

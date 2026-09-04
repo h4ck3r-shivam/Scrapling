@@ -5,7 +5,7 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "scrapling"
 # Static version instead of a dynamic version so we can get better layer caching while building docker, check the docker file to understand
-version = "0.4.15"
+version = "0.4.16"
 description = "Scrapling is an undetectable, powerful, flexible, high-performance Python library that makes Web Scraping easy and effortless as it should be!"
 readme = {file = "README.md", content-type = "text/markdown"}
 license = {file = "LICENSE"}
@@ -95,8 +95,25 @@ shell = [
     "markdownify>=1.2.0",
     "scrapling[fetchers]",
 ]
+webapp = [
+    "fastapi>=0.141.1",
+    "uvicorn[standard]>=0.52.4",
+    "pydantic>=2.13.4",
+    "pydantic-settings>=2.15.0",
+    "aiosqlite>=0.22.1",
+    "argon2-cffi>=25.1.0",
+    "PyJWT>=2.13.0",
+    "cryptography>=50.0.0",
+    "email-validator>=2.3.0",
+    "python-multipart>=0.0.32",
+    "croniter>=2.0.0",
+    "websockets>=17.0.1",
+    "python-dotenv>=1.2.3",
+    "sse-starlette>=3.4.8",
+    "anyio>=4.14.2",
+]
 all = [
-    "scrapling[ai,shell]",
+    "scrapling[ai,shell,webapp]",
 ]
 
 [project.urls]

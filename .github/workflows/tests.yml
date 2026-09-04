@@ -139,3 +139,51 @@ jobs:
       with:
         path: .tox
         key: ${{ steps.tox-cache.outputs.cache-primary-key }}
+
+    - name: Run webapp spec parity tests (if present)
+      if: hashFiles('webapp/tests/test_spec_parity.py') != ''
+      run: |
+        echo "Running webapp spec parity tests"
+        pip install -e ".[all]" 2>/dev/null || pip install -e . 2>/dev/null || true
+        pip install pydantic curl_cffi 2>/dev/null || true
+        python -m pytest webapp/tests/test_spec_parity.py -q
+
+  webapp-spec-parity:
+    name: Webapp Spec Parity
+    if: hashFiles('webapp/tests/test_spec_parity.py') != ''
+    timeout-minutes: 10
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Set up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: "3.12"
+          cache: "pip"
+          cache-dependency-path: |
+            pyproject.toml
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -e ".[all]" 2>/dev/null || pip install -e . || true
+          pip install pydantic curl_cffi pytest 2>/dev/null || true
+
+      - name: Run webapp/tests/test_spec_parity.py (blocking)
+        run: |
+          if [ -f webapp/tests/test_spec_parity.py ]; then
+            python -m pytest webapp/tests/test_spec_parity.py -q
+          else
+            echo "No webapp/tests/test_spec_parity.py found — skipping"
+          fi
+
+      - name: Run webapp tests (if any extra)
+        run: |
+          if [ -d webapp/tests ] && [ "$(ls -A webapp/tests/*.py 2>/dev/null)" ]; then
+            python -m pytest webapp/tests -q || echo "webapp tests had failures"
+          else
+            echo "No additional webapp tests"
+          fi

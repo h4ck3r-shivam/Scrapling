@@ -28,7 +28,9 @@ __pycache__/
 # installation package
 *.egg-info/
 dist/
+!webapp/web/dist/
 build/
+!webapp/web/dist
 
 # environments
 .venv
@@ -51,7 +53,9 @@ venv.bak/
 *.egg
 *.egg-info
 dist
+!webapp/web/dist
 build
+!webapp/web/dist/
 eggs
 .eggs
 parts
@@ -107,4 +111,28 @@ output/*/index.html
 # Sphinx
 docs/_build
 public/
-web/
+
+# Scrapling SCC SPA build – keep in image (api serves via StaticFiles)
+!webapp/web/dist/
+!webapp/web/dist/**
+<<<<<<< Updated upstream
+=======
+
+# Git metadata – never ship .git in the image
+.git/
+.git
+
+# Scrapling Control Center – secrets & runtime data (never bake into the image)
+.jwt_secret
+.first_run_password
+.secret_key
+**/.jwt_secret
+**/.first_run_password
+**/.secret_key
+webapp/data/crawls/
+webapp/data/exports/
+webapp/data/dev_cache/
+webapp/.venv/
+playwright-report/
+test-results/
+>>>>>>> Stashed changes

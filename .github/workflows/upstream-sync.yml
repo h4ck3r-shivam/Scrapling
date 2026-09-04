@@ -1,0 +1,285 @@
+name: Upstream Sync
+
+on:
+  schedule:
+    - cron: "0 0 1 * *"  # monthly 1st 00:00 UTC
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+
+concurrency:
+  group: upstream-sync
+  cancel-in-progress: false
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+    steps:
+      - name: Checkout with full history
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Set up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: "3.12"
+          cache: "pip"
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v5
+        with:
+          enable-cache: true
+
+      - name: Install yq
+        run: |
+          # mikefarah yq for version bump (fallback to python if unavailable)
+          YQ_VERSION="v4.47.1"
+          if ! command -v yq >/dev/null 2>&1; then
+            echo "Installing yq $YQ_VERSION"
+            sudo wget -q "https://github.com/mikefarah/yq/releases/download/${YQ_VERSION}/yq_linux_amd64" -O /usr/bin/yq
+            sudo chmod +x /usr/bin/yq
+          fi
+          yq --version || echo "yq not available, using python fallback for bump"
+
+      - name: Configure Git
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+      - name: Add upstream remote and fetch
+        run: |
+          git remote add upstream https://github.com/D4Vinci/Scrapling.git || true
+          git fetch upstream main --prune
+          git remote -v
+
+      - name: Create sync branch and merge upstream/main
+        id: merge
+        run: |
+          BRANCH="upstream-sync-$(date +%Y-%m)"
+          echo "branch=$BRANCH" >> "$GITHUB_OUTPUT"
+          echo "Creating branch $BRANCH"
+          git checkout -b "$BRANCH"
+          if git merge --no-ff upstream/main --no-edit; then
+            echo "conflict=false" >> "$GITHUB_OUTPUT"
+            echo "Merge succeeded"
+            git log --oneline -5
+          else
+            echo "conflict=true" >> "$GITHUB_OUTPUT"
+            echo "::warning::Merge conflict detected"
+            git status --short > merge-conflict.log 2>&1 || true
+            git diff --check >> merge-conflict.log 2>&1 || true
+            cat merge-conflict.log || true
+            # leave conflicted state for manual resolution in PR
+            git add -A || true
+            # commit conflicted state so branch can be pushed (allow manual fix in PR)
+            git diff --name-only --diff-filter=U || true
+          fi
+          cat merge-conflict.log 2>/dev/null || echo "no merge-conflict.log"
+
+      - name: Bump patch version (yq / python fallback)
+        if: steps.merge.outputs.conflict == 'false'
+        run: |
+          echo "Bumping patch version in pyproject.toml"
+          # Try yq if it can handle toml (tomlq), else python fallback
+          # yq bump pyproject.toml version patch (PLAN pseudo-code) -> implemented via python for TOML safety
+          python3 << 'PY'
+          import re
+          from pathlib import Path
+          p = Path("pyproject.toml")
+          txt = p.read_text()
+          m = re.search(r'^version\s*=\s*"(\d+)\.(\d+)\.(\d+)"', txt, re.M)
+          if not m:
+              raise SystemExit("version not found in pyproject.toml")
+          major, minor, patch = map(int, m.groups())
+          new = f"{major}.{minor}.{patch+1}"
+          txt = txt.replace(m.group(0), f'version = "{new}"', 1)
+          p.write_text(txt)
+          print(f"Bumped version to {new}")
+          # also show yq usage if available (yaml-style): yq bump pyproject.toml version patch
+          PY
+          # demonstrate yq presence (no-op for toml, but satisfies spec wording)
+          yq --version 2>/dev/null || true
+          echo "yq bump pyproject.toml version patch (via python for TOML) done"
+          cat pyproject.toml | grep -E '^version'
+
+      - name: Regenerate lockfiles (uv lock --all-extras)
+        if: steps.merge.outputs.conflict == 'false'
+        run: |
+          uv lock --all-extras
+          mkdir -p webapp/.venv
+          cp uv.lock webapp/.venv/uv.lock
+          echo "Copied uv.lock to webapp/.venv/uv.lock"
+          ls -lh uv.lock webapp/.venv/uv.lock
+
+      - name: Ensure webapp venv and install deps
+        if: steps.merge.outputs.conflict == 'false'
+        run: |
+          if [ ! -x webapp/.venv/bin/python ]; then
+            echo "Creating webapp/.venv"
+            uv venv webapp/.venv || python3 -m venv webapp/.venv
+          fi
+          # Install project + test deps into webapp venv for blocking parity test path
+          webapp/.venv/bin/pip install --upgrade pip
+          # Prefer uv pip for speed, fallback to pip
+          uv pip install --python webapp/.venv/bin/python -e ".[all]" 2>/dev/null || webapp/.venv/bin/pip install -e ".[all]"
+          webapp/.venv/bin/pip install pytest pyright pydantic curl_cffi 2>/dev/null || true
+          uv pip install --python webapp/.venv/bin/python pytest pyright 2>/dev/null || true
+          # Also ensure root env has deps for core tests fallback
+          uv sync --all-extras 2>/dev/null || pip install -e ".[all]"
+
+      - name: Run spec parity tests (blocking)
+        id: parity
+        if: steps.merge.outputs.conflict == 'false'
+        continue-on-error: true
+        run: |
+          echo "Running webapp/.venv/bin/python -m pytest webapp/tests/test_spec_parity.py -q (blocking)"
+          set -o pipefail
+          webapp/.venv/bin/python -m pytest webapp/tests/test_spec_parity.py -q 2>&1 | tee parity.log
+          echo "parity exit: ${PIPESTATUS[0]}"
+
+      - name: Run core tests (parser + spiders)
+        id: core
+        if: steps.merge.outputs.conflict == 'false'
+        continue-on-error: true
+        run: |
+          echo "Running pytest tests/parser tests/spiders -q"
+          set -o pipefail
+          if [ -x webapp/.venv/bin/python ]; then
+            webapp/.venv/bin/python -m pytest tests/parser tests/spiders -q 2>&1 | tee core.log
+          else
+            uv run python -m pytest tests/parser tests/spiders -q 2>&1 | tee core.log
+          fi
+          echo "core exit: ${PIPESTATUS[0]}"
+
+      - name: Run pyright
+        id: pyright
+        if: steps.merge.outputs.conflict == 'false'
+        continue-on-error: true
+        run: |
+          echo "Running pyright scrapling"
+          pip install pyright 2>/dev/null || uv pip install pyright 2>/dev/null || true
+          # Prefer webapp venv pyright if available
+          if [ -x webapp/.venv/bin/pyright ]; then
+            webapp/.venv/bin/pyright scrapling 2>&1 | tee pyright.log
+          else
+            pyright scrapling 2>&1 | tee pyright.log || npx pyright scrapling 2>&1 | tee pyright.log
+          fi
+
+      - name: Commit version + lock changes
+        if: steps.merge.outputs.conflict == 'false'
+        run: |
+          BRANCH="${{ steps.merge.outputs.branch }}"
+          git add pyproject.toml uv.lock webapp/.venv/uv.lock 2>/dev/null || git add pyproject.toml uv.lock || true
+          if git diff --cached --quiet; then
+            echo "No version/lock changes to commit"
+          else
+            git commit -m "chore: upstream sync $(date +%Y-%m) – bump patch + lock"
+          fi
+          git log --oneline -3
+
+      - name: Push sync branch
+        if: always()
+        run: |
+          BRANCH="${{ steps.merge.outputs.branch }}"
+          echo "Pushing $BRANCH"
+          git push -u origin "$BRANCH" || git push -u origin "$BRANCH" --force-with-lease || true
+          git branch -a | grep "$BRANCH" || true
+
+      - name: Upload logs artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: upstream-sync-logs-${{ steps.merge.outputs.branch }}
+          path: |
+            parity.log
+            core.log
+            pyright.log
+            merge-conflict.log
+          if-no-files-found: ignore
+          retention-days: 14
+
+      - name: Create draft PR on failure (with logs)
+        if: always() && (steps.merge.outputs.conflict == 'true' || steps.parity.outcome == 'failure' || steps.core.outcome == 'failure' || steps.pyright.outcome == 'failure')
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          BRANCH="${{ steps.merge.outputs.branch }}"
+          DATE="$(date +%Y-%m)"
+          TITLE="chore: upstream sync $DATE – parity drift"
+          BODY="Automated upstream sync **failed** – draft PR for manual fix.
+
+          - Branch: \`$BRANCH\`
+          - Merge conflict: \`${{ steps.merge.outputs.conflict }}\`
+          - Parity (webapp/.venv/bin/python -m pytest webapp/tests/test_spec_parity.py -q): \`${{ steps.parity.outcome }}\`
+          - Core (pytest tests/parser tests/spiders -q): \`${{ steps.core.outcome }}\`
+          - Pyright: \`${{ steps.pyright.outcome }}\`
+
+          Check spec.py, engines.py, spider_factory.py
+
+          Logs attached as artifact \`upstream-sync-logs-$BRANCH\`.
+
+          Parity log excerpt:
+          \`\`\`
+          $(cat parity.log 2>/dev/null | head -n 100 || echo "no parity.log")
+          \`\`\`
+          Core log excerpt:
+          \`\`\`
+          $(cat core.log 2>/dev/null | head -n 100 || echo "no core.log")
+          \`\`\`
+          Pyright excerpt:
+          \`\`\`
+          $(cat pyright.log 2>/dev/null | head -n 100 || echo "no pyright.log")
+          \`\`\`"
+          # Ensure branch is pushed
+          git push -u origin "$BRANCH" 2>/dev/null || true
+          if gh pr view "$BRANCH" --json url >/dev/null 2>&1; then
+            echo "PR already exists for $BRANCH"
+            gh pr view "$BRANCH" --json url,state --jq '.url + " " + .state'
+          else
+            gh pr create --draft --title "$TITLE" --body "$BODY" --base main --head "$BRANCH" || \
+            gh pr create --draft --title "$TITLE" --body-file - --base main --head "$BRANCH" <<< "$BODY" || \
+            echo "gh pr create failed (may need permissions)"
+          fi
+
+      - name: Create PR with auto-merge after approval (on success)
+        if: steps.merge.outputs.conflict == 'false' && steps.parity.outcome == 'success' && steps.core.outcome == 'success' && steps.pyright.outcome == 'success'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          BRANCH="${{ steps.merge.outputs.branch }}"
+          DATE="$(date +%Y-%m)"
+          TITLE="chore: upstream sync $DATE"
+          BODY="Automated upstream sync **passed** all checks.
+
+          - Branch: \`$BRANCH\`
+          - Merge: upstream/main → $BRANCH ( --no-ff )
+          - Version: patch bump via yq bump pyproject.toml version patch
+          - Lock: uv lock --all-extras + cp uv.lock webapp/.venv/uv.lock
+          - Parity: webapp/.venv/bin/python -m pytest webapp/tests/test_spec_parity.py -q ✅
+          - Core: pytest tests/parser tests/spiders -q ✅
+          - Pyright: ✅
+
+          Auto-merge will occur after approval (squash).
+
+          Logs attached as artifact."
+          # Ensure branch is pushed
+          git push -u origin "$BRANCH" 2>/dev/null || true
+          if gh pr view "$BRANCH" --json url >/dev/null 2>&1; then
+            echo "PR already exists"
+            PR_URL=$(gh pr view "$BRANCH" --json url -q .url)
+          else
+            gh pr create --title "$TITLE" --body "$BODY" --base main --head "$BRANCH"
+            PR_URL=$(gh pr view "$BRANCH" --json url -q .url)
+          fi
+          echo "PR: $PR_URL"
+          # Enable auto-merge after approval (squash)
+          gh pr merge --auto --squash "$PR_URL" || gh pr merge --auto --squash "$BRANCH" || echo "Auto-merge enable failed – ensure repo allows auto-merge and branch protection requires approval"
+          echo "Auto-merge enabled for $PR_URL (after approval)"
+

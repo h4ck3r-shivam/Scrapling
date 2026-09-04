@@ -1,0 +1,23 @@
+# Scrapling Control Center – Cloudflare Tunnel sidecar (overlay)
+# Use together with the base file; never paste this into Coolify alone:
+#   docker compose -f docker-compose.yml -f docker-compose.tunnel.yml --profile tunnel up -d
+# On VM: cloudflared tunnel create scrapling && cloudflared tunnel route dns scrapling scrapling.yourdomain.com
+# Ingress (Cloudflare Zero Trust → Tunnels → scrapling → Configuration → Ingress):
+#   scrapling.yourdomain.com -> http://api:8000
+# Requires CLOUDFLARE_TUNNEL_TOKEN set in the environment / Coolify Environment Variables.
+
+services:
+  cloudflared:
+    image: cloudflare/cloudflared:2024.10.0
+    command: tunnel --no-autoupdate run --token ${CLOUDFLARE_TUNNEL_TOKEN}
+    depends_on:
+      api:
+        condition: service_healthy
+    restart: unless-stopped
+    # Only started when the tunnel profile is enabled or the overlay is included explicitly.
+    profiles: ["tunnel"]
+    logging:
+      driver: json-file
+      options:
+        max-size: 10m
+        max-file: "3"

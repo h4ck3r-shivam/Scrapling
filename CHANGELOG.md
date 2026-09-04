@@ -2,6 +2,39 @@
 
 All notable changes to Scrapling, taken from the [GitHub releases](https://github.com/D4Vinci/Scrapling/releases).
 
+## [v0.4.16](https://github.com/D4Vinci/Scrapling/releases/tag/v0.4.16) - 2026-08-27
+
+**Roadmap complete – pagination, schemas, analyzer & regex, plus a Scrapy plugin that actually replaces parsel 🎉**
+
+This release closes every remaining item in `ROADMAP.md` and fixes the browser-e2e nits found in `v0.4.15` testing.
+
+### 🚀 New Stuff and quality of life changes
+
+- **Scrapy plugin – automatic parsel replacement** (`scrapling/integrations/scrapy.py`):
+  - `ScraplingSpiderMiddleware` – enable in `SPIDER_MIDDLEWARES` and every callback receives a Scrapling `Response` without `@scrapling_response`.
+  - `ScraplingDownloaderMiddleware` – exposes `response.scrapling` / `response._scrapling_response` (via `WeakKeyDictionary` + class property, so it works with Scrapy's `__slots__` `Response`).
+  - `ScraplingAddon` – Scrapy ≥2.13 `ADDONS` (and `<2.13` `EXTENSIONS`) that auto-registers the spider middleware and wraps `spider_opened` methods. All three respect `SCRAPLING_SELECTOR_CONFIG` and the `_scrapling_wrapped` guard.
+- **Pagination auto-detection** (`scrapling/core/pagination.py`, `scrapling/parser.py:983`):
+  - `Selector.find_pagination(strict=False)`, `pagination_urls(absolute, canonicalize)`, `next_page_url()` – heuristics for `rel="next"`, `aria-label`, `.pagination`/`.pager` containers, numbered links and next-text (`next/»/›/→/more/load more/older`). Strict mode only `rel="next"` + explicit next text. Work on `Fetcher`/`DynamicFetcher` `Response` as well.
+- **Schema auto-detection** (`scrapling/core/schemas.py`, `scrapling/parser.py:1048`):
+  - `Selector.schemas()`, `json_ld()`, `microdata()`, `opengraph()`, `twitter_card()`, `canonical_url()` – aggregates JSON-LD (array + invalid-JSON tolerant), Microdata (WHATWG `itemscope` nesting), Open Graph, Twitter Cards, `meta` and `canonical`. Nested microdata like `Product.offers.price` is preserved.
+- **Page analyzer** (`scrapling/core/analyzer.py`, `scrapling/parser.py:1097`):
+  - `Selector.analyze()` (aliases `analyzer`/`analyse`/`page_analyzer`) → `{url,title,description,keywords,author,language,charset,viewport,theme_color,robots,generator,canonical,opengraph,twitter,json_ld,microdata,headings,stats{links/images/forms…},word_count,reading_time_minutes,tech_hints[WordPress/Shopify/React…],social_links,has_forms/has_search/has_schema,meta}`.
+- **Regex generation from element groups** (`scrapling/core/regex_generator.py`, `scrapling/parser.py:1138`):
+  - `Selector.generate_regex(attribute="href", tag="a", css_selector, anchored, capture_groups)` and standalone `generate_regex(values)` / `generate_regex_from_elements(selector)` – escapes literals, generalises middles (`\d+`, `\d{3}`, `[A-Za-z]+`, `\w+`, `.*?`), validates against inputs, falls back to `^(?:a|b)$` for heterogeneous sets like `["/page/1","/product/123"]` or `["abc","xyz"]` instead of over-generic `^/p.+?$` / `^[A-Za-z]+$`.
+- **Docs** – new `Parsing → Helpers` page (`docs/parsing/helpers.md`) and `Scrapy` plugin guide (`docs/integrations/scrapy.md:54`) plus `zensical.toml` nav.
+
+### 🐛 Bug Fixes
+
+- **Browser fetchers now handle `data:` / `about:` / `file:` URLs** (`scrapling/engines/_browsers/_controllers.py:162`, `_stealth.py:255`) – previously `page.goto(data:text/html,…) ` returned `None` and raised `Failed to get response`; now a synthetic `Response(status 200)` from `page.content()` is returned. Fixes the `1/23` browser-e2e failure.
+- **Regex over-generalisation** (`scrapling/core/regex_generator.py:83`) – mixed `href` sets now return alternation instead of `^/p.+?$` / `^[A-Za-z]+$` when the common prefix is short (`<4` chars) and the frag is `.*?`/`.+?`, and completely disparate strings (`[]` prefix/suffix) always use alternation.
+- **CSS4 `i` flag** (`[attr="x" i]`) is not supported by `cssselect 1.x` – removed from `pagination` / `schemas` / `analyzer` selectors (`SelectorSyntaxError Expected ']', got <IDENT 'i'`) and replaced by Python `lower()` filtering.
+- **Scrapy `Response` `__slots__`** – `response.scrapling = …` raised `AttributeError` – now via `WeakKeyDictionary` cache + class properties (`scrapling/integrations/scrapy.py:20`).
+
+### Tests
+
+- **620 → 631 unit** (`+27` roadmap + `+11` Scrapy plugin), `22/23` browser e2e now `23/23` after data-URL fix (live `example.com` / `quotes.toscrape.com(/js)` with `DynamicFetcher`/`StealthyFetcher`/`FetcherSession`/Spider).
+
 ## [v0.4.15](https://github.com/D4Vinci/Scrapling/releases/tag/v0.4.15) - 2026-08-23
 
 **One of the biggest releases this year: a reworked MCP server, RAG-ready Markdown in one line, an improved Cloudflare solver, and browser tabs that stay open for automation 🚀**

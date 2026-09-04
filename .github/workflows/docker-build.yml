@@ -2,7 +2,7 @@ name: Build and Push Docker Image
 
 on:
   pull_request:
-    types: [closed]
+    types: [opened, synchronize, reopened, closed]
     branches:
       - main
   workflow_dispatch:
@@ -17,6 +17,48 @@ env:
   GHCR_IMAGE: ghcr.io/${{ github.repository_owner }}/scrapling
 
 jobs:
+  # PR gate: build the deploy image without pushing and fail on HIGH/CRITICAL vulns.
+  pr-build-scan:
+    runs-on: ubuntu-latest
+    if: ${{ github.event_name == 'pull_request' && github.event.action != 'closed' }}
+    permissions:
+      contents: read
+      security-events: write
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v6
+
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v3
+
+    - name: Build API image (no push)
+      uses: docker/build-push-action@v6
+      with:
+        context: .
+        file: webapp/Dockerfile.api
+        push: false
+        load: true
+        tags: scc-api:pr-${{ github.event.pull_request.number }}
+        cache-from: type=gha
+        cache-to: type=gha,mode=min,ignore-error=true
+
+    - name: Run Trivy vulnerability scanner
+      uses: aquasecurity/trivy-action@0.28.0
+      with:
+        image-ref: scc-api:pr-${{ github.event.pull_request.number }}
+        format: sarif
+        output: trivy-results.sarif
+        severity: HIGH,CRITICAL
+        exit-code: '1'
+        ignore-unfixed: false
+
+    - name: Upload Trivy scan results to GitHub Security tab
+      if: always()
+      uses: github/codeql-action/upload-sarif@v3
+      with:
+        sarif_file: trivy-results.sarif
+
   build-and-push:
     runs-on: ubuntu-latest
     if: ${{ github.event_name == 'workflow_dispatch' || (github.event.pull_request.merged == true && github.event.pull_request.user.login == github.repository_owner) }}

@@ -979,6 +979,172 @@ class Selector(SelectorsGeneration):
         """
         return self.text.re_first(regex, default, replace_entities, clean_match, case_sensitive)
 
+    # --- Pagination auto-detection -------------------------------------------------
+    def find_pagination(self, strict: bool = False) -> "Selectors":
+        """Auto-detect pagination links on the page.
+
+        Uses heuristics for ``rel="next"``, pagination containers
+        (``.pagination`` / ``.pager``), numeric links and next-text patterns
+        like ``Next``, ``»``, ``›``, ``→``, ``Load more`` and ``Older``.
+
+        :param strict: If ``True`` only ``rel="next"`` and explicit ``Next`` texts are considered.
+        :return: :class:`Selectors` of pagination elements (may be empty).
+
+        Example::
+
+            page = Selector(html, url="https://example.com")
+            next_pages = page.find_pagination()
+            urls = page.pagination_urls()
+            next_url = page.next_page_url()
+        """
+        from scrapling.core.pagination import find_pagination as _find_pagination
+
+        return _find_pagination(self, strict=strict)
+
+    def pagination_urls(
+        self,
+        strict: bool = False,
+        absolute: bool = True,
+        canonicalize: bool = True,
+    ) -> List[str]:
+        """Return absolute pagination URLs.
+
+        :param strict: Passed to :meth:`find_pagination`
+        :param absolute: Join relative ``href`` values with :attr:`url`
+        :param canonicalize: Apply ``w3lib.url.canonicalize_url`` when available
+        :return: List of URL strings (deduplicated, order preserved)
+        """
+        from scrapling.core.pagination import pagination_urls as _pagination_urls
+
+        return _pagination_urls(self, strict=strict, absolute=absolute, canonicalize=canonicalize)
+
+    def next_page_url(self, strict: bool = False, absolute: bool = True) -> Optional[str]:
+        """Return the single most likely *next* page URL or ``None``.
+
+        Prefers ``rel="next"`` over next-text matches over numeric pagination.
+        """
+        from scrapling.core.pagination import next_page_url as _next_page_url
+
+        return _next_page_url(self, strict=strict, absolute=absolute)
+
+    # Compatibility aliases
+    get_pagination_urls = pagination_urls
+    auto_pagination = find_pagination
+    detect_pagination = find_pagination
+
+    # --- Schema auto-detection -----------------------------------------------------
+    def schemas(self) -> Dict[str, Any]:
+        """Detect all structured-data schemas on the page.
+
+        :return: ``{"json_ld": [...], "microdata": [...], "opengraph": {...}, "twitter": {...}, "meta": {...}, "canonical": str|None, "has_schema": bool}``
+        """
+        from scrapling.core.schemas import detect_schemas as _detect_schemas
+
+        return _detect_schemas(self)
+
+    def json_ld(self) -> List[Dict[str, Any]]:
+        """Extract JSON-LD objects (``<script type="application/ld+json">``)."""
+        from scrapling.core.schemas import extract_json_ld as _extract_json_ld
+
+        return _extract_json_ld(self)
+
+    def microdata(self) -> List[Dict[str, Any]]:
+        """Extract HTML Microdata (``itemscope`` / ``itemprop``)."""
+        from scrapling.core.schemas import extract_microdata as _extract_microdata
+
+        return _extract_microdata(self)
+
+    def opengraph(self) -> Dict[str, str]:
+        """Extract Open Graph ``og:`` properties."""
+        from scrapling.core.schemas import extract_opengraph as _extract_opengraph
+
+        return _extract_opengraph(self)
+
+    def twitter_card(self) -> Dict[str, str]:
+        """Extract Twitter Cards ``twitter:`` meta."""
+        from scrapling.core.schemas import extract_twitter as _extract_twitter
+
+        return _extract_twitter(self)
+
+    # Alias
+    twitter_cards = twitter_card
+
+    def meta_data(self) -> Dict[str, str]:
+        """Extract generic ``<meta name="...">`` map."""
+        from scrapling.core.schemas import extract_meta as _extract_meta
+
+        return _extract_meta(self)
+
+    def canonical_url(self) -> Optional[str]:
+        """Return the canonical URL (``<link rel="canonical">``) if present."""
+        from scrapling.core.schemas import extract_canonical as _extract_canonical
+
+        return _extract_canonical(self)
+
+    # Compatibility aliases for schema helpers
+    get_json_ld = json_ld
+    get_microdata = microdata
+    get_opengraph = opengraph
+    get_schemas = schemas
+    detect_schemas = schemas
+
+    # --- Page analyzer -------------------------------------------------------------
+    def analyze(self) -> Dict[str, Any]:
+        """Analyze the page through its meta-elements and return what was learned.
+
+        Returns a dict with ``title``, ``description``, ``language``, ``charset``,
+        ``canonical``, ``opengraph``, ``twitter``, ``json_ld``, ``microdata``,
+        ``headings``, ``stats``, ``word_count``, ``reading_time_minutes``,
+        ``tech_hints``, ``social_links``, ``has_forms``, ``has_search``, etc.
+
+        Example::
+
+            report = Selector(html, url="https://example.com").analyze()
+            print(report["title"], report["tech_hints"], report["stats"])
+        """
+        from scrapling.core.analyzer import analyze as _analyze
+
+        return _analyze(self)
+
+    # Aliases – all point to the same analyzer
+    analyzer = analyze
+    analyse = analyze
+    page_analyzer = analyze
+
+    # --- Regex generation ----------------------------------------------------------
+    def generate_regex(
+        self,
+        attribute: str = "href",
+        tag: str = "a",
+        css_selector: Optional[str] = None,
+        anchored: bool = True,
+        capture_groups: bool = False,
+    ) -> str:
+        """Generate a regex that matches all values of an attribute on the page.
+
+        :param attribute: Attribute to collect (default ``href``)
+        :param tag: Tag to query when ``css_selector`` is None (default ``a``)
+        :param css_selector: Full CSS selector override (if given ``tag`` is ignored)
+        :param anchored: Wrap pattern with ``^...$``
+        :param capture_groups: Wrap varying part in ``(...)``
+        :return: Regex pattern string
+
+        Example::
+
+            page = Selector('<a href="/p/1">1</a><a href="/p/2">2</a>')
+            pattern = page.generate_regex(attribute="href")
+            # '^/p/\\d+$'  – matches "/p/123", "/p/999", etc.
+            page2 = Selector('<a href="https://a.com/x">')
+            pattern2 = page.generate_regex(css_selector='a[href^="https://"]')
+        """
+        from scrapling.core.regex_generator import generate_regex_from_elements as _gen
+
+        return _gen(self, attribute=attribute, tag=tag, css_selector=css_selector, anchored=anchored, capture_groups=capture_groups)
+
+    # Alias
+    generate_pattern = generate_regex
+    generate_regex_for_attribute = generate_regex
+
     @staticmethod
     def __get_attributes(element: HtmlElement, ignore_attributes: List | Tuple) -> Dict:
         """Return attributes dictionary without the ignored list"""

@@ -109,4 +109,21 @@ output/*/index.html
 # Sphinx
 docs/_build
 public/
-web/
+webapp/dist_old/
+<<<<<<< Updated upstream
+=======
+
+# Scrapling Control Center – secrets & runtime data (never commit; rotate if leaked)
+.jwt_secret
+.first_run_password
+.secret_key
+**/.jwt_secret
+**/.first_run_password
+**/.secret_key
+webapp/data/crawls/
+webapp/data/exports/
+webapp/data/dev_cache/
+webapp/.venv/
+playwright-report/
+test-results/
+>>>>>>> Stashed changes

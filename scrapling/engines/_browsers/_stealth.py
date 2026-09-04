@@ -253,10 +253,29 @@ class StealthySession(SyncSession, StealthySessionMixin):
                             log.error(f"Error executing page_setup: {e}")
 
                     try:
+                        is_data_url = url.startswith("data:") or url.startswith("about:") or url.startswith("file:")
                         first_response = page.goto(url, referer=referer)
                         self._wait_for_page_stability(page, params.load_dom, params.network_idle)
 
                         if not first_response:
+                            if is_data_url:
+                                try:
+                                    page_content = ResponseFactory._get_page_content(page).encode("utf-8")
+                                except Exception:
+                                    page_content = b""
+                                return Response(
+                                    url=page.url if page else url,
+                                    content=page_content,
+                                    status=200,
+                                    reason="OK",
+                                    encoding="utf-8",
+                                    cookies=tuple(dict(c) for c in page.context.cookies()) if page else {},
+                                    headers={},
+                                    request_headers={},
+                                    history=[],
+                                    meta={"proxy": proxy},
+                                    **params.selector_config,
+                                )
                             raise RuntimeError(f"Failed to get response for {url}")
 
                         if params.solve_cloudflare:
@@ -541,10 +560,33 @@ class AsyncStealthySession(AsyncSession, StealthySessionMixin):
                             log.error(f"Error executing page_setup: {e}")
 
                     try:
+                        is_data_url = url.startswith("data:") or url.startswith("about:") or url.startswith("file:")
                         first_response = await page.goto(url, referer=referer)
                         await self._wait_for_page_stability(page, params.load_dom, params.network_idle)
 
                         if not first_response:
+                            if is_data_url:
+                                try:
+                                    page_content = (await ResponseFactory._get_async_page_content(page)).encode("utf-8")
+                                except Exception:
+                                    page_content = b""
+                                try:
+                                    cookies = tuple(dict(c) for c in await page.context.cookies())  # type: ignore
+                                except Exception:
+                                    cookies = tuple()
+                                return Response(
+                                    url=page.url if page else url,
+                                    content=page_content,
+                                    status=200,
+                                    reason="OK",
+                                    encoding="utf-8",
+                                    cookies=cookies,
+                                    headers={},
+                                    request_headers={},
+                                    history=[],
+                                    meta={"proxy": proxy},
+                                    **params.selector_config,
+                                )
                             raise RuntimeError(f"Failed to get response for {url}")
 
                         if params.solve_cloudflare:

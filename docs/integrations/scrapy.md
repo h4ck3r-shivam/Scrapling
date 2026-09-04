@@ -52,6 +52,77 @@ from scrapling.integrations.scrapy import convert_response
 scrapling_response = convert_response(scrapy_response, keep_comments=False, keep_cdata=False)
 ```
 
+## Plugin – automatic replacement without decorating every callback
+
+Decorating every callback works, but for large spiders it is tedious and easy to forget. The integration ships two middlewares and an Addon that do the same conversion for you automatically – this is the **Scrapy plugin** the roadmap asked for. Pick the level that fits your project.
+
+### Option 1: Spider Middleware (recommended)
+
+Enable the spider middleware once in `settings.py` and every callback will receive a Scrapling `Response` without any decorator:
+
+```python
+# settings.py
+SPIDER_MIDDLEWARES = {
+    "scrapling.integrations.scrapy.ScraplingSpiderMiddleware": 543,
+}
+# Optional: forward Selector config to every converted response
+SCRAPLING_SELECTOR_CONFIG = {"adaptive": True, "keep_comments": False}
+```
+
+```python
+import scrapy
+
+class QuotesSpider(scrapy.Spider):
+    name = "quotes"
+    start_urls = ["https://quotes.toscrape.com"]
+
+    # No decorator needed – `response` is already a Scrapling Response
+    def parse(self, response):
+        yield {"title": response.css("h1::text").get()}
+        yield from response.css("a::attr(href)").getall()  # still works, plus find_by_text etc.
+```
+
+The middleware wraps `Request.callback` ahead of `process_spider_input` and also wraps any `Request` objects yielded by the spider, so chained callbacks are converted as well.
+
+### Option 2: Downloader Middleware
+
+If you prefer to keep the original Scrapy response but want Scrapling available alongside it, enable the downloader middleware:
+
+```python
+# settings.py
+DOWNLOADER_MIDDLEWARES = {
+    "scrapling.integrations.scrapy.ScraplingDownloaderMiddleware": 543,
+}
+```
+
+Each response then carries a cached Scrapling copy:
+
+```python
+def parse(self, response):
+    # original Scrapy response still
+    scrapling = response.scrapling  # or response._scrapling_response
+    yield {"title": scrapling.css("h1::text").get()}
+    # you can also call: from scrapling.integrations.scrapy import convert_response
+```
+
+Both middlewares can be enabled together – the spider middleware rewrites the argument, the downloader middleware adds the attribute.
+
+### Option 3: Addon (Scrapy ≥ 2.13)
+
+Scrapy 2.13 introduced Addons. The same plugin is available as an addon that auto-registers the spider middleware:
+
+```python
+# settings.py
+ADDONS = {
+    "scrapling.integrations.scrapy.ScraplingAddon": 500,
+}
+SCRAPLING_SELECTOR_CONFIG = {"keep_comments": False}
+```
+
+For Scrapy < 2.13 the same class works as an extension (`EXTENSIONS`). The addon hooks `spider_opened` and wraps already-bound spider methods, so `process_spider_input` still handles dynamically created callbacks.
+
+All three entry-points accept `SCRAPLING_SELECTOR_CONFIG` and honour the `_scrapling_wrapped` flag, so decorating a callback manually and enabling the middleware at the same time never double-wraps.
+
 ## Notes
 
 - Yield `scrapy.Request(response.urljoin(href))` for the next pages as in the example above. Scrapling's `Response.follow()` method builds requests for [Scrapling's spider system](../spiders/getting-started.md), which Scrapy doesn't understand.
