@@ -87,6 +87,15 @@ MySpider().start()
 <table>
   <tr>
     <td width="200">
+      <a href="https://coldproxy.com/?utm_source=scrapling&utm_medium=sponsorship&utm_campaign=202609-scrapling-readme&utm_content=platinum-badge&promo=SCRAPLING5" target="_blank" title="Residential, IPv6 & Datacenter Proxies for Web Scraping">
+        <img src="https://raw.githubusercontent.com/D4Vinci/Scrapling/main/images/coldproxy.png">
+      </a>
+    </td>
+    <td> توفر <a href="https://coldproxy.com/?utm_source=scrapling&utm_medium=sponsorship&utm_campaign=202609-scrapling-readme&utm_content=platinum-badge&promo=SCRAPLING5" target="_blank"><b>ColdProxy</b></a> وكلاء سكنيين ووكلاء مراكز بيانات لاستخراج بيانات الويب بشكل مستقر، وجمع البيانات العامة، والاختبار الموجَّه جغرافياً في أكثر من 195 دولة. <i>استخدام هذا الرابط يمنحك خصم 5%</i>.
+    </td>
+  </tr>
+  <tr>
+    <td width="200">
       <a href="https://go.nodemaven.com/scraplingaugust" target="_blank" title="Proxies with the Highest IP Scores">
         <img src="https://raw.githubusercontent.com/D4Vinci/Scrapling/main/images/NodeMaven.jpg" width="240" height="100">
       </a>
@@ -102,15 +111,6 @@ MySpider().start()
       </a>
     </td>
     <td> توفر <a href="https://proxidize.com/?utm_source=github&utm_medium=sponsorship&utm_campaign=scrapling&utm_content=d4vinci" target="_blank"><b>Proxidize</b></a> وكلاء جوّالين وسكنيين للاستخراج، وأتمتة المتصفح، ومراقبة تحسين محركات البحث (SEO)، ووكلاء الذكاء الاصطناعي، وجمع البيانات. <i>استخدم الرمز <b>scrapling20</b> للحصول على خصم 20%</i>.
-    </td>
-  </tr>
-  <tr>
-    <td width="200">
-      <a href="https://coldproxy.com/?utm_source=scrapling&utm_medium=github&utm_campaign=coldproxy&utm_content=platinum_sponsor" target="_blank" title="Residential, IPv6 & Datacenter Proxies for Web Scraping">
-        <img src="https://raw.githubusercontent.com/D4Vinci/Scrapling/main/images/coldproxy.png">
-      </a>
-    </td>
-    <td> توفر <a href="https://coldproxy.com/?utm_source=scrapling&utm_medium=github&utm_campaign=coldproxy&utm_content=platinum_sponsor" target="_blank"><b>ColdProxy</b></a> وكلاء سكنيين ووكلاء مراكز بيانات لاستخراج بيانات الويب بشكل مستقر، وجمع البيانات العامة، والاختبار الموجَّه جغرافياً في أكثر من 195 دولة.
     </td>
   </tr>
   <tr>

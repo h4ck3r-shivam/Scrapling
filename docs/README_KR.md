@@ -87,6 +87,15 @@ MySpider().start()
 <table>
   <tr>
     <td width="200">
+      <a href="https://coldproxy.com/?utm_source=scrapling&utm_medium=sponsorship&utm_campaign=202609-scrapling-readme&utm_content=platinum-badge&promo=SCRAPLING5" target="_blank" title="Residential, IPv6 & Datacenter Proxies for Web Scraping">
+        <img src="https://raw.githubusercontent.com/D4Vinci/Scrapling/main/images/coldproxy.png">
+      </a>
+    </td>
+    <td> <a href="https://coldproxy.com/?utm_source=scrapling&utm_medium=sponsorship&utm_campaign=202609-scrapling-readme&utm_content=platinum-badge&promo=SCRAPLING5" target="_blank"><b>ColdProxy</b></a>는 안정적인 웹 스크래핑, 공개 데이터 수집, 195개 이상의 국가에서의 지역 타겟팅 테스트를 위한 주거용 및 데이터센터 프록시를 제공합니다. <i>이 링크를 사용하면 5% 할인을 받습니다</i>.
+    </td>
+  </tr>
+  <tr>
+    <td width="200">
       <a href="https://go.nodemaven.com/scraplingaugust" target="_blank" title="Proxies with the Highest IP Scores">
         <img src="https://raw.githubusercontent.com/D4Vinci/Scrapling/main/images/NodeMaven.jpg" width="240" height="100">
       </a>
@@ -102,15 +111,6 @@ MySpider().start()
       </a>
     </td>
     <td> <a href="https://proxidize.com/?utm_source=github&utm_medium=sponsorship&utm_campaign=scrapling&utm_content=d4vinci" target="_blank"><b>Proxidize</b></a>는 스크래핑, 브라우저 자동화, SEO 모니터링, AI 에이전트, 데이터 수집을 위한 모바일 및 주거용 프록시를 제공합니다. <i>코드 <b>scrapling20</b>으로 20% 할인</i>.
-    </td>
-  </tr>
-  <tr>
-    <td width="200">
-      <a href="https://coldproxy.com/?utm_source=scrapling&utm_medium=github&utm_campaign=coldproxy&utm_content=platinum_sponsor" target="_blank" title="Residential, IPv6 & Datacenter Proxies for Web Scraping">
-        <img src="https://raw.githubusercontent.com/D4Vinci/Scrapling/main/images/coldproxy.png">
-      </a>
-    </td>
-    <td> <a href="https://coldproxy.com/?utm_source=scrapling&utm_medium=github&utm_campaign=coldproxy&utm_content=platinum_sponsor" target="_blank"><b>ColdProxy</b></a>는 안정적인 웹 스크래핑, 공개 데이터 수집, 195개 이상의 국가에서의 지역 타겟팅 테스트를 위한 주거용 및 데이터센터 프록시를 제공합니다.
     </td>
   </tr>
   <tr>

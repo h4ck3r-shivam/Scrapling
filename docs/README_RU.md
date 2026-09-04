@@ -87,6 +87,15 @@ MySpider().start()
 <table>
   <tr>
     <td width="200">
+      <a href="https://coldproxy.com/?utm_source=scrapling&utm_medium=sponsorship&utm_campaign=202609-scrapling-readme&utm_content=platinum-badge&promo=SCRAPLING5" target="_blank" title="Residential, IPv6 & Datacenter Proxies for Web Scraping">
+        <img src="https://raw.githubusercontent.com/D4Vinci/Scrapling/main/images/coldproxy.png">
+      </a>
+    </td>
+    <td> <a href="https://coldproxy.com/?utm_source=scrapling&utm_medium=sponsorship&utm_campaign=202609-scrapling-readme&utm_content=platinum-badge&promo=SCRAPLING5" target="_blank"><b>ColdProxy</b></a> предоставляет резидентные и дата-центровые прокси для стабильного веб-скрейпинга, сбора публичных данных и гео-таргетированного тестирования в более чем 195 странах. <i>Использование этой ссылки даёт скидку 5%</i>.
+    </td>
+  </tr>
+  <tr>
+    <td width="200">
       <a href="https://go.nodemaven.com/scraplingaugust" target="_blank" title="Proxies with the Highest IP Scores">
         <img src="https://raw.githubusercontent.com/D4Vinci/Scrapling/main/images/NodeMaven.jpg" width="240" height="100">
       </a>
@@ -102,15 +111,6 @@ MySpider().start()
       </a>
     </td>
     <td> <a href="https://proxidize.com/?utm_source=github&utm_medium=sponsorship&utm_campaign=scrapling&utm_content=d4vinci" target="_blank"><b>Proxidize</b></a> предоставляет мобильные и резидентные прокси для скрейпинга, автоматизации браузера, SEO-мониторинга, ИИ-агентов и сбора данных. <i>Используйте код <b>scrapling20</b> для скидки 20%</i>.
-    </td>
-  </tr>
-  <tr>
-    <td width="200">
-      <a href="https://coldproxy.com/?utm_source=scrapling&utm_medium=github&utm_campaign=coldproxy&utm_content=platinum_sponsor" target="_blank" title="Residential, IPv6 & Datacenter Proxies for Web Scraping">
-        <img src="https://raw.githubusercontent.com/D4Vinci/Scrapling/main/images/coldproxy.png">
-      </a>
-    </td>
-    <td> <a href="https://coldproxy.com/?utm_source=scrapling&utm_medium=github&utm_campaign=coldproxy&utm_content=platinum_sponsor" target="_blank"><b>ColdProxy</b></a> предоставляет резидентные и дата-центровые прокси для стабильного веб-скрейпинга, сбора публичных данных и гео-таргетированного тестирования в более чем 195 странах.
     </td>
   </tr>
   <tr>

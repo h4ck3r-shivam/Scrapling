@@ -87,6 +87,15 @@ MySpider().start()
 <table>
   <tr>
     <td width="200">
+      <a href="https://coldproxy.com/?utm_source=scrapling&utm_medium=sponsorship&utm_campaign=202609-scrapling-readme&utm_content=platinum-badge&promo=SCRAPLING5" target="_blank" title="Residential, IPv6 & Datacenter Proxies for Web Scraping">
+        <img src="https://raw.githubusercontent.com/D4Vinci/Scrapling/main/images/coldproxy.png">
+      </a>
+    </td>
+    <td> <a href="https://coldproxy.com/?utm_source=scrapling&utm_medium=sponsorship&utm_campaign=202609-scrapling-readme&utm_content=platinum-badge&promo=SCRAPLING5" target="_blank"><b>ColdProxy</b></a> fournit des proxies résidentiels et de datacenter pour un web scraping stable, la collecte de données publiques et des tests géolocalisés dans plus de 195 pays. <i>Utiliser ce lien vous donne 5% de réduction</i>.
+    </td>
+  </tr>
+  <tr>
+    <td width="200">
       <a href="https://go.nodemaven.com/scraplingaugust" target="_blank" title="Proxies with the Highest IP Scores">
         <img src="https://raw.githubusercontent.com/D4Vinci/Scrapling/main/images/NodeMaven.jpg" width="240" height="100">
       </a>
@@ -102,15 +111,6 @@ MySpider().start()
       </a>
     </td>
     <td> <a href="https://proxidize.com/?utm_source=github&utm_medium=sponsorship&utm_campaign=scrapling&utm_content=d4vinci" target="_blank"><b>Proxidize</b></a> fournit des proxies mobiles et résidentiels pour le scraping, l'automatisation de navigateur, le suivi SEO, les agents IA et la collecte de données. <i>Utilisez le code <b>scrapling20</b> pour bénéficier de 20% de réduction</i>.
-    </td>
-  </tr>
-  <tr>
-    <td width="200">
-      <a href="https://coldproxy.com/?utm_source=scrapling&utm_medium=github&utm_campaign=coldproxy&utm_content=platinum_sponsor" target="_blank" title="Residential, IPv6 & Datacenter Proxies for Web Scraping">
-        <img src="https://raw.githubusercontent.com/D4Vinci/Scrapling/main/images/coldproxy.png">
-      </a>
-    </td>
-    <td> <a href="https://coldproxy.com/?utm_source=scrapling&utm_medium=github&utm_campaign=coldproxy&utm_content=platinum_sponsor" target="_blank"><b>ColdProxy</b></a> fournit des proxies résidentiels et de datacenter pour un web scraping stable, la collecte de données publiques et des tests géolocalisés dans plus de 195 pays.
     </td>
   </tr>
   <tr>
