@@ -1,43 +1,16 @@
 # syntax=docker/dockerfile:1.6
-# Scrapling Control Center – FastAPI (Coolify Service)
+# Chaan-Been – FastAPI (Ubuntu VM + Cloudflare Tunnel)
 # Context: repo root (docker-compose.yml: build.context = .)
-# Serves API + SPA (web/dist via StaticFiles). See PLAN.md §4.
+# Serves API + SPA (web/dist via StaticFiles).
 
 # ---------- Stage 1: build frontend (Vite) ----------
-<<<<<<< Updated upstream
-FROM node:20-slim AS webbuild
-=======
 FROM node:20.18-slim AS webbuild
->>>>>>> Stashed changes
 WORKDIR /app/webapp/web
-# Gracefully handle missing web/ (pre-scaffold) – create placeholder dist
 COPY webapp/web/package.json webapp/web/package-lock.json* ./
 COPY webapp/web/ ./
-RUN if [ -f package.json ]; then \
-      npm ci 2>/dev/null || npm install 2>/dev/null; \
-      npm run build 2>/dev/null || (mkdir -p dist && echo '<!doctype html><html><body>Scrapling</body></html>' > dist/index.html); \
-    else \
-      mkdir -p dist && echo '<!doctype html><html><body>Scrapling placeholder</body></html>' > dist/index.html; \
-    fi
+RUN npm ci && npm run build
 
 # ---------- Stage 2: Python API ----------
-<<<<<<< Updated upstream
-FROM python:3.12-slim-trixie
-
-LABEL io.modelcontextprotocol.server.name="io.github.D4Vinci/Scrapling"
-
-COPY --from=ghcr.io/astral-sh/uv:latest /uv /uvx /bin/
-
-ENV DEBIAN_FRONTEND=noninteractive \
-    PYTHONUNBUFFERED=1 \
-    PYTHONDONTWRITEBYTECODE=1
-
-WORKDIR /app
-
-# curl required for HEALTHCHECK
-RUN apt-get update && apt-get install -y --no-install-recommends curl \
-    && rm -rf /var/lib/apt/lists/*
-=======
 FROM python:3.12.7-slim-bookworm
 
 LABEL io.modelcontextprotocol.server.name="io.github.D4Vinci/Scrapling"
@@ -58,22 +31,15 @@ RUN apt-get update && apt-get install -y --no-install-recommends curl tini \
     && useradd -m -u 1000 -d /home/appuser -s /bin/bash appuser \
     && mkdir -p /ms-playwright /app/webapp/data /home/appuser \
     && chown -R appuser:appuser /ms-playwright /home/appuser /app
->>>>>>> Stashed changes
 
-# Layer cache: manifests first
-COPY pyproject.toml uv.lock* ./
+# Layer cache: manifests first (uv.lock committed — reproducible --frozen build)
+COPY pyproject.toml uv.lock ./
 COPY webapp/pyproject.toml ./webapp/pyproject.toml
 
-<<<<<<< Updated upstream
-# Install deps with ALL extras (scrapling[all] includes webapp: fastapi, uvicorn, aiosqlite, etc)
-RUN --mount=type=cache,target=/root/.cache/uv \
-    uv sync --all-extras --compile-bytecode
-=======
 # Install deps with ALL extras (scrapling[all] includes webapp: fastapi, uvicorn, aiosqlite, etc).
-# --frozen = reproducible build, fails fast if uv.lock is missing/stale (run `uv lock` and commit uv.lock).
+# --frozen = reproducible build, fails fast if uv.lock is stale (run `uv lock` and commit uv.lock).
 RUN --mount=type=cache,target=/root/.cache/uv \
     uv sync --frozen --all-extras --compile-bytecode
->>>>>>> Stashed changes
 
 # Copy source tree
 COPY . .
@@ -81,36 +47,16 @@ COPY . .
 # Copy built SPA into api image (served by FastAPI StaticFiles at /)
 COPY --from=webbuild /app/webapp/web/dist ./webapp/web/dist
 
-<<<<<<< Updated upstream
-# Install Playwright chromium (+ system deps) and re-sync project
-=======
 # Install Playwright chromium (+ system deps) into PLAYWRIGHT_BROWSERS_PATH and re-sync project
->>>>>>> Stashed changes
 RUN --mount=type=cache,target=/root/.cache/uv \
     --mount=type=cache,target=/var/cache/apt \
     --mount=type=cache,target=/var/lib/apt \
     apt-get update && \
-    uv run playwright install --with-deps chromium 2>/dev/null || uv run playwright install chromium 2>/dev/null || true && \
-<<<<<<< Updated upstream
-    uv sync --all-extras --compile-bytecode 2>/dev/null || true && \
+    uv run playwright install --with-deps chromium && \
+    uv sync --frozen --all-extras --compile-bytecode && \
     apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
-# Persisted runtime dirs (app.db, exports, crawls, .jwt_secret, .secret_key, elements_storage.db)
-RUN mkdir -p /app/webapp/data && chown -R 1000:1000 /app/webapp
-
-HEALTHCHECK --interval=30s --timeout=10s --start-period=10s --retries=3 CMD curl -f http://localhost:8000/api/health || exit 1
-
-USER 1000:1000
-VOLUME /app/webapp/data
-EXPOSE 8000
-
-# --proxy-headers required behind Coolify Traefik / Cloudflare Tunnel
-CMD ["uv","run","uvicorn","app.main:app","--host","0.0.0.0","--port","8000","--app-dir","webapp/api","--proxy-headers"]
-=======
-    uv sync --frozen --all-extras --compile-bytecode 2>/dev/null || true && \
-    apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
-
-# Persisted runtime dirs (app.db, exports, crawls, .jwt_secret, .secret_key, elements_storage.db)
+# Persisted runtime dirs (app.db, exports, crawls, .jwt_secret, elements_storage.db)
 RUN mkdir -p /app/webapp/data && chown -R appuser:appuser /app/webapp /ms-playwright
 
 HEALTHCHECK --interval=30s --timeout=10s --start-period=30s --retries=3 CMD curl -f http://localhost:8000/api/health || exit 1
@@ -121,7 +67,6 @@ EXPOSE 8000
 
 ENTRYPOINT ["tini", "--"]
 
-# --proxy-headers required behind Coolify Traefik / Cloudflare Tunnel.
+# --proxy-headers required behind Cloudflare Tunnel.
 # Workers/concurrency tuned for the compose 2CPU/3G limits; graceful shutdown 30s for in-flight crawls.
 CMD ["uv","run","uvicorn","app.main:app","--host","0.0.0.0","--port","8000","--app-dir","webapp/api","--proxy-headers","--workers","2","--limit-concurrency","100","--timeout-graceful-shutdown","30"]
->>>>>>> Stashed changes

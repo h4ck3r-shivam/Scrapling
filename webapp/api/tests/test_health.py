@@ -79,7 +79,7 @@ def test_system_info(client, auth_headers):
     assert r.status_code == 200
     body = r.json()
     assert "scrapling_version" in body
-    assert body["app"] == "Scrapling Control Center"
+    assert body["app"] == "Chaan-Been"
     assert "uptime_seconds" in body
 
 
@@ -394,9 +394,9 @@ def test_page_action_member_forbidden(client, auth_headers):
     r = client.post(
         "/api/users",
         headers=auth_headers,
-        json={"email": "member@example.com", "password": "memberpass1", "role": "member"},
+        json={"email": "member@example.com", "password": "memberpass123", "role": "member"},
     )
-    r = client.post("/api/auth/login", json={"email": "member@example.com", "password": "memberpass1"})
+    r = client.post("/api/auth/login", json={"email": "member@example.com", "password": "memberpass123"})
     assert r.status_code == 200
     member_token = r.json()["access_token"]
     member_headers = {"Authorization": f"Bearer {member_token}"}

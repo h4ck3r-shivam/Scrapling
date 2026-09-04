@@ -112,17 +112,11 @@ output/*/index.html
 docs/_build
 public/
 
-# Scrapling SCC SPA build – keep in image (api serves via StaticFiles)
+# Chaan-Been SPA build – keep in image (api serves via StaticFiles)
 !webapp/web/dist/
 !webapp/web/dist/**
-<<<<<<< Updated upstream
-=======
 
-# Git metadata – never ship .git in the image
-.git/
-.git
-
-# Scrapling Control Center – secrets & runtime data (never bake into the image)
+# Chaan-Been – secrets & runtime data (never bake into the image)
 .jwt_secret
 .first_run_password
 .secret_key
@@ -135,4 +129,3 @@ webapp/data/dev_cache/
 webapp/.venv/
 playwright-report/
 test-results/
->>>>>>> Stashed changes
