@@ -98,12 +98,12 @@ MySpider().start()
   </tr>
   <tr>
     <td width="200">
-      <a href="https://go.nodemaven.com/scraplingaugust" target="_blank" title="Proxies with the Highest IP Scores">
+      <a href="https://go.nodemaven.com/scraplingseptember" target="_blank" title="Proxies with the Highest IP Scores">
         <img src="https://raw.githubusercontent.com/D4Vinci/Scrapling/main/images/NodeMaven.jpg" width="240" height="100">
       </a>
     </td>
     <td>
-    <a href="https://go.nodemaven.com/scraplingaugust" target="_blank">NodeMaven</a> - o provedor de proxies mais eficiente para Web Scraping e automação, com a mais alta qualidade de IP do mercado. Use o código SCRAPLING35 para obter 35% de desconto.
+    <a href="https://go.nodemaven.com/scraplingseptember" target="_blank">NodeMaven</a> - o provedor de proxies mais eficiente para Web Scraping e automação, com a mais alta qualidade de IP do mercado. Use o código SCRAPLING35 para obter 35% de desconto.
     </td>
   </tr>
   <tr>
@@ -193,12 +193,32 @@ MySpider().start()
   </tr>
   <tr>
     <td width="200">
-      <a href="https://niuproxy.com/?utm_source=scrapling&utm_medium=scrapling&ref=scrapling" target="_blank" title="Affordable Residential in 190+ Countries">
-        <img src="https://raw.githubusercontent.com/D4Vinci/Scrapling/main/images/niuproxy.png">
+      <a href="https://voidmob.com/proxies?utm_source=scrapling" target="_blank" title="Premium Mobile Proxies from Real Carrier Networks">
+        <img src="https://raw.githubusercontent.com/D4Vinci/Scrapling/main/images/voidmob.png">
       </a>
     </td>
     <td>
-    <a href="https://niuproxy.com/?utm_source=scrapling&utm_medium=scrapling&ref=scrapling" target="_blank">NiuProxy</a> oferece proxies residenciais rotativos a partir de $0.35/GB. Use o código exclusivo Scrapling PAY2 para ganhar 10% de desconto na sua recarga.
+    <a href="https://voidmob.com/proxies?utm_source=scrapling" target="_blank">VoidMob</a>: proxies móveis 4G/5G em SIMs e dispositivos reais. Dedicados ou compartilhados, sticky, rotativos, presets de fingerprint p0f, API/MCP e suporte completo a protocolos. Use o código SCRAPLING20 para 20% de desconto.
+    </td>
+  </tr>
+  <tr>
+    <td width="200">
+      <a href="https://byteful.com/?utm_source=github&utm_medium=github-sponsor&utm_campaign=scrapling_github_sponsor" target="_blank" title="Ethically sourced residential proxy infrastructure powering web scraping and AI agents">
+        <img src="https://raw.githubusercontent.com/D4Vinci/Scrapling/main/images/byteful.png">
+      </a>
+    </td>
+    <td>
+    A <a href="https://byteful.com/?utm_source=github&utm_medium=github-sponsor&utm_campaign=scrapling_github_sponsor" target="_blank">Byteful</a> fornece proxies residenciais, móveis, ISP e de datacenter de origem ética, além de ferramentas de scraping e automação com IA. Use o código SCRAPLING10 para obter 10% de desconto em proxies residenciais.
+    </td>
+  </tr>
+  <tr>
+    <td width="200">
+      <a href="https://proxylane.dev/?utm_source=scrapling&utm_medium=partnership&utm_campaign=scrapling_platinum_202609&utm_content=github_readme" target="_blank" title="28M+ clean residential IPs for browser automation. No Blocks. No CAPTCHAs. Pay-as-you-Go.">
+        <img src="https://raw.githubusercontent.com/D4Vinci/Scrapling/main/images/proxylane.png">
+      </a>
+    </td>
+    <td>
+    <a href="https://proxylane.dev/?utm_source=scrapling&utm_medium=partnership&utm_campaign=scrapling_platinum_202609&utm_content=github_readme" target="_blank">ProxyLane</a>: Reduza os bloqueios e os CAPTCHAs em 90%. 28 milhões de IPs residenciais premium para scraping intensivo da web. 195 países. Segmentação por cidade/ISP/CEP. Sessões fixas ou rotativas. Tráfego sem prazo de validade a partir de $2/GB. Código <strong>SCRAPEANDTAKE</strong>: <em>25% de desconto</em>.
     </td>
   </tr>
 </table>
@@ -208,7 +228,6 @@ MySpider().start()
 
 <!-- sponsors -->
 
-<a href="https://www.novada.com/?d4vinci-scrapling" target="_blank" title="The All-in-One Solution for Every Data Scraping Scenario"><img src="https://raw.githubusercontent.com/D4Vinci/Scrapling/main/images/novada.jpg"></a>
 <a href="https://cloro.dev/?utm_source=referral&utm_medium=scrapling" target="_blank" title="The search API for the AI era"><img src="https://raw.githubusercontent.com/D4Vinci/Scrapling/main/images/cloro.jpg"></a>
 
 <br/>

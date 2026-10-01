@@ -96,12 +96,12 @@ MySpider().start()
   </tr>
   <tr>
     <td width="200">
-      <a href="https://go.nodemaven.com/scraplingaugust" target="_blank" title="Proxies with the Highest IP Scores">
+      <a href="https://go.nodemaven.com/scraplingseptember" target="_blank" title="Proxies with the Highest IP Scores">
         <img src="https://raw.githubusercontent.com/D4Vinci/Scrapling/main/images/NodeMaven.jpg" width="240" height="100">
       </a>
     </td>
     <td>
-    <a href="https://go.nodemaven.com/scraplingaugust" target="_blank">NodeMaven</a> - Webスクレイピングと自動化のための最も効率的なプロキシプロバイダーで、市場最高品質のIPを提供します。コード SCRAPLING35 で35%割引になります。
+    <a href="https://go.nodemaven.com/scraplingseptember" target="_blank">NodeMaven</a> - Webスクレイピングと自動化のための最も効率的なプロキシプロバイダーで、市場最高品質のIPを提供します。コード SCRAPLING35 で35%割引になります。
     </td>
   </tr>
   <tr>
@@ -191,12 +191,32 @@ MySpider().start()
   </tr>
   <tr>
     <td width="200">
-      <a href="https://niuproxy.com/?utm_source=scrapling&utm_medium=scrapling&ref=scrapling" target="_blank" title="Affordable Residential in 190+ Countries">
-        <img src="https://raw.githubusercontent.com/D4Vinci/Scrapling/main/images/niuproxy.png">
+      <a href="https://voidmob.com/proxies?utm_source=scrapling" target="_blank" title="Premium Mobile Proxies from Real Carrier Networks">
+        <img src="https://raw.githubusercontent.com/D4Vinci/Scrapling/main/images/voidmob.png">
       </a>
     </td>
     <td>
-    <a href="https://niuproxy.com/?utm_source=scrapling&utm_medium=scrapling&ref=scrapling" target="_blank">NiuProxy</a> は$0.35/GBから利用できるローテーション型住宅用プロキシを提供します。Scrapling限定コードPAY2を使うと、チャージが10%オフになります。
+    <a href="https://voidmob.com/proxies?utm_source=scrapling" target="_blank">VoidMob</a>: 実際のSIMとデバイスを使った4G/5Gモバイルプロキシ。専用または共有、スティッキー、ローテーション、p0fフィンガープリントプリセット、API/MCPおよび全プロトコル対応。コードSCRAPLING20で20%オフ。
+    </td>
+  </tr>
+  <tr>
+    <td width="200">
+      <a href="https://byteful.com/?utm_source=github&utm_medium=github-sponsor&utm_campaign=scrapling_github_sponsor" target="_blank" title="Ethically sourced residential proxy infrastructure powering web scraping and AI agents">
+        <img src="https://raw.githubusercontent.com/D4Vinci/Scrapling/main/images/byteful.png">
+      </a>
+    </td>
+    <td>
+    <a href="https://byteful.com/?utm_source=github&utm_medium=github-sponsor&utm_campaign=scrapling_github_sponsor" target="_blank">Byteful</a> は、倫理的に調達されたレジデンシャル、モバイル、ISP、データセンタープロキシに加え、スクレイピングとAI自動化のツールを提供します。コード SCRAPLING10 でレジデンシャルプロキシが10%オフになります。
+    </td>
+  </tr>
+  <tr>
+    <td width="200">
+      <a href="https://proxylane.dev/?utm_source=scrapling&utm_medium=partnership&utm_campaign=scrapling_platinum_202609&utm_content=github_readme" target="_blank" title="28M+ clean residential IPs for browser automation. No Blocks. No CAPTCHAs. Pay-as-you-Go.">
+        <img src="https://raw.githubusercontent.com/D4Vinci/Scrapling/main/images/proxylane.png">
+      </a>
+    </td>
+    <td>
+    <a href="https://proxylane.dev/?utm_source=scrapling&utm_medium=partnership&utm_campaign=scrapling_platinum_202609&utm_content=github_readme" target="_blank">ProxyLane</a>：ブロックとCAPTCHAを90%削減。大規模なWebスクレイピング向けに、2,800万の高品質なレジデンシャルIPを提供。195か国に対応。都市・ISP・郵便番号（ZIP）の指定が可能。固定・ローテーションセッション。有効期限のない通信量を $2/GB から提供。コード <strong>SCRAPEANDTAKE</strong> で<em>25%オフ</em>。
     </td>
   </tr>
 </table>
@@ -206,7 +226,6 @@ MySpider().start()
 
 <!-- sponsors -->
 
-<a href="https://www.novada.com/?d4vinci-scrapling" target="_blank" title="The All-in-One Solution for Every Data Scraping Scenario"><img src="https://raw.githubusercontent.com/D4Vinci/Scrapling/main/images/novada.jpg"></a>
 <a href="https://cloro.dev/?utm_source=referral&utm_medium=scrapling" target="_blank" title="The search API for the AI era"><img src="https://raw.githubusercontent.com/D4Vinci/Scrapling/main/images/cloro.jpg"></a>
 
 <br/>
